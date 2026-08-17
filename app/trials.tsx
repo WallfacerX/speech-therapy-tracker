@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
@@ -11,11 +11,17 @@ export default function Trials() {
 
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
+  const [closeCount, setCloseCount] = useState(0);
 
-  const trialNumber = correctCount + incorrectCount + 1;
+  const trialNumber = correctCount + closeCount + incorrectCount + 1;
 
   return (
     <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={{width: "100%"}}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
       <Text style={styles.title}>Data Collection</Text>
 
       <Text style={styles.label}>Goal</Text>
@@ -85,12 +91,60 @@ export default function Trials() {
     </>
   )}
       {rubric === "Approximation" && (
+     <>
         <Text style={styles.placeholder}>
-          Approximation controls will appear here.
+          Trial {trialNumber}
         </Text>
-      )}
-</View>
 
+       <View style={styles.statsContainer}>
+           <Text style={styles.countText}>
+             Correct: {correctCount}
+           </Text>
+
+           <Text style={styles.countText}>
+             Close: {closeCount}
+           </Text>
+
+           <Text style={styles.countText}>
+             Incorrect: {incorrectCount}
+           </Text>
+
+           <Text style={styles.countText}>
+             Total Trials: {correctCount + closeCount + incorrectCount}
+           </Text>
+         </View>
+
+        <Pressable
+          style={styles.closeButton}
+          onPress={() =>  {
+             setCloseCount(closeCount + 1);
+          }}
+        >
+        <Text style={styles.responseButtonText}>Close</Text>
+      </Pressable>
+
+     <Pressable
+       style={styles.responseButton}
+       onPress={() => {
+         setCorrectCount(correctCount + 1);
+       }}
+     >
+       <Text style={styles.responseButtonText}>Correct</Text>
+     </Pressable>
+
+     <Pressable
+       style={styles.incorrectButton}
+       onPress={() => {
+         setIncorrectCount(incorrectCount + 1);
+       }}
+     >
+       <Text style={styles.responseButtonText}>Incorrect</Text>
+     </Pressable>
+
+     </>
+  )}
+</View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -98,9 +152,6 @@ export default function Trials() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingTop: 40,
     backgroundColor: "#F7F8FA",
   },
 
@@ -124,8 +175,9 @@ const styles = StyleSheet.create({
   },
 
   trialArea: {
-    width: "100%",
-    minHeight: 280,
+    width: "90%",
+    alignSelf: "center",
+    minHeight: 360,
     marginTop: 12,
     borderRadius: 12,
     borderWidth: 1,
@@ -176,4 +228,23 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 24,
   },
+
+  closeButton: {
+    width: "100%",
+    marginTop: 24,
+    paddingVertical: 18,
+    borderRadius: 12,
+    backgroundColor: "#F59E0B",
+    alignItems: "center",
+  },
+
+  scrollContent: {
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingTop: 40,
+    paddingBottom: 40,
+  },
+
 });
+
