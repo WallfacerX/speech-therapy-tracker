@@ -4,16 +4,38 @@ import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 
 export default function Trials() {
-  const { goal, rubric } = useLocalSearchParams<{
+  const { goal, rubric, features } = useLocalSearchParams<{
     goal: string;
     rubric: string;
+    features: string;
   }>();
 
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
   const [closeCount, setCloseCount] = useState(0);
-
+  const [featureAccuracy, setFeatureAccuracy] = useState<string[]>([]);
+  const [completedTrials, setCompletedTrials] = useState<string[][]>([]);
+  const motorSpeechFeatures = [
+    "Segments",
+    "Prosody",
+    "Transitions",
+    "Voicing",
+  ];
+  const selectedFeatures = features
+    ? features.split(",").map((feature) => feature.trim())
+    : [];
   const trialNumber = correctCount + closeCount + incorrectCount + 1;
+  const fullSuccessCount = completedTrials.filter((trial) =>
+    selectedFeatures.every((feature) =>
+      trial.includes(feature)
+    )
+  ).length;
+  const fullSuccessPercentage =
+    completedTrials.length === 0
+      ? 0
+      : Math.round(
+          (fullSuccessCount / completedTrials.length) * 100
+        );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,6 +63,70 @@ export default function Trials() {
       </Text>
 
     <View style={styles.trialArea}>
+      {rubric === "Motor Speech Features" && (
+                <>
+                  <Text style={styles.placeholder}>
+                    Trial {trialNumber}
+                  </Text>
+
+                  {selectedFeatures.map((feature) => (
+                    <Pressable
+                      key={feature}
+                      style={[
+                       styles.responseButton,
+                           featureAccuracy.includes(feature) && styles.selectedFeatureButton,
+                         ]}
+                         onPress={() => {
+                           if (featureAccuracy.includes(feature)) {
+                             setFeatureAccuracy(
+                               featureAccuracy.filter((item) => item !== feature)
+                             );
+                           } else {
+                             setFeatureAccuracy([
+                               ...featureAccuracy,
+                               feature,
+                             ]);
+                           }
+                         }}
+                       >
+                      <Text style={styles.responseButtonText}>
+                        {feature}
+                      </Text>
+                    </Pressable>
+                  ))}
+
+              <Pressable
+                style={styles.responseButton}
+                  onPress={() => {
+                    console.log("Trial completed", featureAccuracy);
+
+                    setCompletedTrials([
+                      ...completedTrials,
+                      featureAccuracy,
+                    ]);
+
+                    setFeatureAccuracy([]);
+                  }}
+              >
+                <Text style={styles.responseButtonText}>
+                  Complete Trial
+                </Text>
+              </Pressable>
+
+              <Text style={styles.countText}>
+                Completed Trials: {completedTrials.length}
+              </Text>
+
+              <Text style={styles.countText}>
+                Full Successful Trials: {fullSuccessCount}
+              </Text>
+
+              <Text style={styles.countText}>
+                Full Success Accuracy: {fullSuccessPercentage}%
+              </Text>
+
+              </>
+            )}
       {rubric === "Basic Accuracy" && (
         <>
           <Text style={styles.placeholder}>
@@ -199,6 +285,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#16A34A",
     alignItems: "center",
+  },
+
+  selectedFeatureButton: {
+    backgroundColor: "#2563EB",
   },
 
   responseButtonText: {
