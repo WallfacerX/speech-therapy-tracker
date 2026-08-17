@@ -53,15 +53,25 @@ export default function Session() {
         !selectedRubric && styles.disabledButton,
       ]}
       disabled={!selectedRubric}
-      onPress={() =>
-        router.push({
-          pathname: "/trials",
-          params: {
-            goal,
-            rubric: selectedRubric,
-          },
-        })
-      }
+      onPress={() => {
+        if (selectedRubric === "Motor Speech Features") {
+          router.push({
+            pathname: "/feature-selection",
+            params: {
+              goal,
+              rubric: selectedRubric,
+            },
+          });
+        } else {
+          router.push({
+            pathname: "/trials",
+            params: {
+              goal,
+              rubric: selectedRubric,
+            },
+          });
+        }
+      }}
     >
       <Text style={styles.continueButtonText}>
         Continue
