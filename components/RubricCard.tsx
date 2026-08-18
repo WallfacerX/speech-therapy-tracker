@@ -14,7 +14,10 @@ export default function RubricCard({
   selected,
 }: RubricCardProps) {
   return (
-    <Pressable style={[styles.card, selected && styles.selectedCard]} onPress={onPress}>
+    <Pressable
+      style={[styles.card, selected && styles.selectedCard]}
+      onPress={onPress}
+    >
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
     </Pressable>
@@ -34,8 +37,8 @@ const styles = StyleSheet.create({
   },
 
   selectedCard: {
-    borderColor: "#2563EB",
-    borderWidth: 2,
+    borderColor: "#111827",
+    borderWidth: 3,
   },
 
   title: {
@@ -43,6 +46,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 6,
   },
+
   description: {
     fontSize: 15,
     color: "#6B7280",

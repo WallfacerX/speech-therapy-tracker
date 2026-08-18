@@ -2,73 +2,64 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, Text, StyleSheet } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
-import { featureColors } from "../constants/colors";
+import { featureColors, actionColors } from "../constants/colors";
 
 export default function FeatureSelection() {
-    const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
 
-    const features = [
-      "Segments",
-      "Prosody",
-      "Transitions",
-      "Voicing",
-    ];
+  const features = ["Segments", "Prosody", "Transitions", "Voicing"];
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>
-        Select Features
-      </Text>
+      <Text style={styles.title}>Select Features</Text>
 
       {features.map((feature) => (
-       <Pressable
-         key={feature}
-         style={[
-             styles.featureButton,
-             selectedFeatures.includes(feature) && styles.selectedFeatureButton
-         ]}
-         onPress={() => {
-           if (selectedFeatures.includes(feature)) {
-             setSelectedFeatures(
-                 selectedFeatures.filter((item) => item !== feature)
-             );
-         } else {
-            if (selectedFeatures.length < 4) {
-             setSelectedFeatures ([
-                 ...selectedFeatures,
-                 feature,
-             ]);
-           }
-         }}
-        }
-       >
-          <Text>
-            {feature}
-          </Text>
+        <Pressable
+          key={feature}
+          style={[
+            styles.featureButton,
+            {
+              backgroundColor:
+                featureColors[feature as keyof typeof featureColors],
+
+              borderColor: selectedFeatures.includes(feature)
+                ? "#111827"
+                : "#CBD5E1",
+
+              borderWidth: selectedFeatures.includes(feature) ? 3 : 1,
+            },
+          ]}
+          onPress={() => {
+            if (selectedFeatures.includes(feature)) {
+              setSelectedFeatures(
+                selectedFeatures.filter((item) => item !== feature),
+              );
+            } else {
+              if (selectedFeatures.length < 4) {
+                setSelectedFeatures([...selectedFeatures, feature]);
+              }
+            }
+          }}
+        >
+          <Text style={styles.featureButtonText}>{feature}</Text>
         </Pressable>
-    ))}
-       <Text>
-         Selected: {selectedFeatures.join(", ")}
-       </Text>
+      ))}
 
-       <Pressable
-         disabled={selectedFeatures.length < 1}
-         style={styles.continueButton}
-         onPress={() =>
-           router.push({
-             pathname: "/trials",
-             params: {
-               rubric: "Motor Speech Features",
-               features: selectedFeatures.join(", "),
-             },
-           })
-         }
-       >
-         <Text style={styles.continueButtonText}>
-           Continue
-         </Text>
-       </Pressable>
-
+      <Pressable
+        disabled={selectedFeatures.length < 1}
+        style={styles.continueButton}
+        onPress={() =>
+          router.push({
+            pathname: "/trials",
+            params: {
+              rubric: "Motor Speech Features",
+              features: selectedFeatures.join(", "),
+            },
+          })
+        }
+      >
+        <Text style={styles.continueButtonText}>Continue</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -105,7 +96,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingVertical: 16,
     borderRadius: 12,
-    backgroundColor: "#2563EB",
+    backgroundColor: actionColors.primary,
     alignItems: "center",
   },
 
