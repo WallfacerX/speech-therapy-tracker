@@ -267,21 +267,21 @@ export default function Trials() {
   )}
 
     <Pressable
-      style={styles.responseButton}
-        onPress={() => {
-          router.push({
-            pathname: "/summary",
-            params: {
-                goal,
-                rubric,
-                approximationTrials: approximationTrials.join(","),
-              },
-          });
-        }}
-      >
-        <Text style={styles.responseButtonText}>
-          View Summary
-        </Text>
+      style={styles.summaryButton}
+      onPress={() => {
+        router.push({
+          pathname: "/summary",
+          params: {
+            goal,
+            rubric,
+            approximationTrials: approximationTrials.join(","),
+          },
+        });
+      }}
+    >
+      <Text style={styles.responseButtonText}>
+        View Summary
+      </Text>
     </Pressable>
 
 </View>
@@ -380,6 +380,15 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     borderRadius: 12,
     backgroundColor: "#F59E0B",
+    alignItems: "center",
+  },
+
+  summaryButton: {
+    width: "100%",
+    marginTop: 16,
+    paddingVertical: 18,
+    borderRadius: 12,
+    backgroundColor: "#2563EB",
     alignItems: "center",
   },
 

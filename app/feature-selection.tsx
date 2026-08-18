@@ -2,6 +2,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Pressable, Text, StyleSheet } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
+import { featureColors } from "../constants/colors";
 
 export default function FeatureSelection() {
     const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
