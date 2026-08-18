@@ -2,6 +2,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { router } from "expo-router";
 
 export default function Trials() {
   const { goal, rubric, features } = useLocalSearchParams<{
@@ -264,6 +265,25 @@ export default function Trials() {
      </Pressable>
      </>
   )}
+
+    <Pressable
+      style={styles.responseButton}
+        onPress={() => {
+          router.push({
+            pathname: "/summary",
+            params: {
+                goal,
+                rubric,
+                approximationTrials: approximationTrials.join(","),
+              },
+          });
+        }}
+      >
+        <Text style={styles.responseButtonText}>
+          View Summary
+        </Text>
+    </Pressable>
+
 </View>
       </ScrollView>
     </SafeAreaView>
