@@ -1,5 +1,5 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { Text, StyleSheet, ScrollView, Pressable, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import * as Clipboard from "expo-clipboard";
@@ -9,26 +9,28 @@ export default function Summary() {
 
   const [copied, setCopied] = useState(false);
 
+  const [pressedButton, setPressedButton] = useState<string | null>(null);
+
+  const flashButton = (buttonName: string) => {
+    setPressedButton(buttonName);
+
+    setTimeout(() => {
+      setPressedButton(null);
+    }, 250);
+  };
+
   const trials = approximationTrials
     ? approximationTrials.toString().split(",")
     : [];
 
-  const correctCount = trials.filter(
-    (trial) => trial === "Correct"
-  ).length;
+  const correctCount = trials.filter((trial) => trial === "Correct").length;
 
   const accuracy =
-    trials.length === 0
-      ? 0
-      : Math.round((correctCount / trials.length) * 100);
+    trials.length === 0 ? 0 : Math.round((correctCount / trials.length) * 100);
 
-  const closeCount = trials.filter(
-    (trial) => trial === "Close"
-  ).length;
+  const closeCount = trials.filter((trial) => trial === "Close").length;
 
-  const incorrectCount = trials.filter(
-    (trial) => trial === "Incorrect"
-  ).length;
+  const incorrectCount = trials.filter((trial) => trial === "Incorrect").length;
 
   const summaryText =
     `Completed ${trials.length} trials using the ${rubric} rubric. ` +
@@ -38,126 +40,143 @@ export default function Summary() {
 
   return (
     <SafeAreaView style={styles.container}>
-     <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>Session Summary</Text>
 
-     <Text style={styles.title}>
-             Session Summary
-           </Text>
+        <Text style={styles.sectionTitle}>Session Information</Text>
 
-     <Text style={styles.sectionTitle}>
-       Session Information
-     </Text>
+        <Text style={styles.summaryText}>Goal: {goal}</Text>
 
-     <Text style={styles.summaryText}>
-       Goal: {goal}
-     </Text>
+        <Text style={styles.summaryText}>Rubric: {rubric}</Text>
 
-     <Text style={styles.summaryText}>
-       Rubric: {rubric}
-     </Text>
+        <Text style={styles.sectionTitle}>Performance</Text>
 
-     <Text style={styles.sectionTitle}>
-       Performance
-     </Text>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryText}>Total Trials: {trials.length}</Text>
 
-     <Text style={styles.summaryText}>
-       Total Trials: {trials.length}
-     </Text>
+          <Text style={styles.summaryText}>Correct: {correctCount}</Text>
 
-     <Text style={styles.summaryText}>
-       Correct: {correctCount}
-     </Text>
+          <Text style={styles.summaryText}>
+            Close: {trials.filter((trial) => trial === "Close").length}
+          </Text>
 
-     <Text style={styles.summaryText}>
-       Close: {trials.filter((trial) => trial === "Close").length}
-     </Text>
+          <Text style={styles.summaryText}>
+            Incorrect: {trials.filter((trial) => trial === "Incorrect").length}
+          </Text>
 
-     <Text style={styles.summaryText}>
-       Incorrect: {trials.filter((trial) => trial === "Incorrect").length}
-     </Text>
+          <Text style={styles.summaryText}>Accuracy: {accuracy}%</Text>
+        </View>
 
-     <Text style={styles.summaryText}>
-       Accuracy: {accuracy}%
-     </Text>
+        <Text style={styles.sectionTitle}>Documentation Summary</Text>
 
-     <Text style={styles.sectionTitle}>
-       Documentation Summary
-     </Text>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryText}>{summaryText}</Text>
+        </View>
 
-     <Text style={styles.summaryText}>
-       {summaryText}
-     </Text>
+        {copied && <Text style={styles.copiedText}>Copied!</Text>}
 
-     <Pressable
-       style={styles.responseButton}
-       onPress={async () => {
-         console.log("Copy button pressed");
-         console.log("Copying:", summaryText);
+        <Pressable
+          style={[
+            styles.copyButton,
+            pressedButton === "copy" && styles.pressedButton,
+          ]}
+          onPress={async () => {
+            flashButton("copy");
 
-         await Clipboard.setStringAsync(summaryText);
+            console.log("Copy button pressed");
+            console.log("Copying:", summaryText);
 
-         setCopied(true);
+            await Clipboard.setStringAsync(summaryText);
 
-         console.log("Copied successfully");
-       }}
-     >
-       <Text style={styles.responseButtonText}>
-         Copy Summary
-       </Text>
-     </Pressable>
+            setCopied(true);
 
-     {copied && (
-       <Text style={styles.summaryText}>
-         Copied!
-       </Text>
-     )}
+            setTimeout(() => {
+              setCopied(false);
+            }, 500);
 
+            //TEST
+            console.log("Copied successfully");
+            //TEST
+          }}
+        >
+          <Text style={styles.responseButtonText}>Copy Summary</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
 }
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#F7F8FA",
-      padding: 24,
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F7F8FA",
+    padding: 24,
+  },
 
-    scrollContent: {
-      paddingTop: 40,
-    },
+  summaryCard: {
+    width: "100%",
+    marginTop: 8,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#CBD5E1",
+    backgroundColor: "#FFFFFF",
+  },
 
-    title: {
-      fontSize: 28,
-      fontWeight: "700",
-      marginBottom: 24,
-    },
+  scrollContent: {
+    paddingTop: 20,
+  },
 
-    sectionTitle: {
-        marginTop: 24,
-        marginBottom: 8,
-        fontSize: 18,
-        fontWeight: "700",
-      },
+  title: {
+    fontSize: 28,
+    fontWeight: "700",
+    textAlign: "center",
+    width: "100%",
+  },
 
-    summaryText: {
-        marginTop: 8,
-        fontSize: 16,
-        fontWeight: "500",
-      },
+  sectionTitle: {
+    marginTop: 24,
+    marginBottom: 8,
+    fontSize: 18,
+    fontWeight: "700",
+  },
 
-    responseButton: {
-      marginTop: 24,
-      paddingVertical: 18,
-      borderRadius: 12,
-      backgroundColor: "#16A34A",
-      alignItems: "center",
-    },
+  summaryText: {
+    marginTop: 8,
+    fontSize: 16,
+    fontWeight: "500",
+  },
 
-    responseButtonText: {
-      color: "#FFFFFF",
-      fontSize: 18,
-      fontWeight: "700",
-    },
+  responseButton: {
+    marginTop: 24,
+    paddingVertical: 18,
+    borderRadius: 12,
+    backgroundColor: "#16A34A",
+    alignItems: "center",
+  },
 
-  });
+  copyButton: {
+    marginTop: 5,
+    paddingVertical: 18,
+    borderRadius: 12,
+    backgroundColor: "#374151",
+    alignItems: "center",
+  },
+
+  copiedText: {
+    marginTop: 5,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  responseButtonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "700",
+  },
+
+  pressedButton: {
+    borderWidth: 3,
+    borderColor: "#111827",
+  },
+});

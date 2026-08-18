@@ -6,3 +6,14 @@ export const featureColors = {
   Resonance: "#F97316",
   Rate: "#DC2626",
 };
+
+export const responseColors = {
+  Correct: "#0F766E",
+  Close: "#F59E0B",
+  Incorrect: "#DC2626",
+};
+
+export const actionColors = {
+  primary: "#374151",
+  secondary: "#9CA3AF",
+};
